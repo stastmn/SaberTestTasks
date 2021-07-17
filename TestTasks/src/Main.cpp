@@ -3,6 +3,7 @@
 
 #include "BinNumbers.h"
 #include <climits>
+#include <cstdlib>
 int main()
 {
 	printToBinNumerals(0);
@@ -14,6 +15,7 @@ int main()
 	printToBinNumerals(INT_MAX);
 	printToBinNumerals(INT_MIN);
 
+	system("pause");
 	return 0;
 }
 

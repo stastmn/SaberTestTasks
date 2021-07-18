@@ -23,10 +23,10 @@ float lenght(vec3 vector)
 
 void calc_mesh_normals(vec3* normals, const vec3* verts, const int* faces, int nverts, int nfaces) {
 
-	//use this unordered_map for detecting what faces vertex 'touch' 
-	std::unordered_map<vec3, std::vector<int>> verticeInFaces;
+	//use this unordered_map to cache all faces that include a vertex
+	std::unordered_map<vec3, std::vector<int>> incidentFaces;
 	//here we cache normals for each face
-	std::unordered_map<int, vec3> faceWithNormal;
+	std::unordered_map<int, vec3> polygonNormals;
 
 	//i+=3 because we have triplets of indices for each face
 	for (int i = 0; i < nfaces; i += 3) {
@@ -38,20 +38,20 @@ void calc_mesh_normals(vec3* normals, const vec3* verts, const int* faces, int n
 
 		vec3 faceNormal = crossProduct(edge1, edge2);
 
-		faceWithNormal[i] = faceNormal;
+		polygonNormals[i] = faceNormal;
 
-		verticeInFaces[verts[face[0] - 1]].emplace_back(i);
-		verticeInFaces[verts[face[1] - 1]].emplace_back(i);
-		verticeInFaces[verts[face[2] - 1]].emplace_back(i);
+		incidentFaces[verts[face[0] - 1]].emplace_back(i);
+		incidentFaces[verts[face[1] - 1]].emplace_back(i);
+		incidentFaces[verts[face[2] - 1]].emplace_back(i);
 
 	}
 
 	for (int i = 0; i < nverts; i++) {
 
-		auto tmp = verticeInFaces[verts[i]];
+		auto tmp = incidentFaces[verts[i]];
 		vec3 normal = { 0,0,0 };
 		for (auto iterator = tmp.begin(); iterator != tmp.end(); iterator++) {
-			normal = normal + faceWithNormal[*iterator];
+			normal = normal + polygonNormals[*iterator];
 		}
 		float len = lenght(normal);
 		if (len != 0)
